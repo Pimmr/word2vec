@@ -245,11 +245,11 @@ func (m *Model) CosN(e Expr, n int) ([]Match, error) {
 	}
 
 	v.Normalise()
-	return m.cosineN(v, n), nil
+	return m.VectorCosN(v, n), nil
 }
 
-// cosineN is a method which returns a list of `n` most similar vectors to `v` in the model.
-func (m *Model) cosineN(v Vector, n int) []Match {
+// VectorCosN is a method which returns a list of `n` most similar vectors to `v` in the model.
+func (m *Model) VectorCosN(v Vector, n int) []Match {
 	r := make([]Match, n)
 	for w, u := range m.words {
 		score := v.Dot(u)
@@ -291,7 +291,7 @@ func MultiCosN(m *Model, exprs []Expr, n int) ([][]Match, error) {
 	ch := make(chan multiMatches, len(vecs))
 	for i, v := range vecs {
 		go func(i int, v Vector) {
-			ch <- multiMatches{N: i, Matches: m.cosineN(v, n)}
+			ch <- multiMatches{N: i, Matches: m.VectorCosN(v, n)}
 			wg.Done()
 		}(i, v)
 	}
